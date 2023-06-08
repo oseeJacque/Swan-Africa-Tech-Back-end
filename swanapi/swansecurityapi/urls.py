@@ -17,7 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
-from swansecurityapi.views import UserRegistrationView, UserLoginView
+from swansecurityapi.views import UserRegistrationView, UserLoginView,SendPasswordResetEmailView,UserChangePasswordView, UserPasswordResetView
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 
@@ -25,5 +25,9 @@ urlpatterns = [
     path('register/', UserRegistrationView.as_view(), name='register'),
     path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-    path('login/', UserLoginView.as_view(), name="login")
+    path('login/', UserLoginView.as_view(), name="login"),
+    path('send-reset-password-mail/', SendPasswordResetEmailView.as_view(), name="reset_password_email"),
+    path('changepassword/', UserChangePasswordView.as_view(), name="changepassword"),
+    path('reset-password/<uid>/<token>/', UserPasswordResetView.as_view(), name="reset-password"),
+
 ]
