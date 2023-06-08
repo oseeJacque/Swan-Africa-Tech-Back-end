@@ -1,5 +1,6 @@
 from django.contrib.auth import authenticate, get_user_model
 from django.contrib.auth.hashers import check_password
+from django.http import HttpResponse
 from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -89,7 +90,7 @@ class SendPasswordResetEmailView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-#Change password from user
+#Change password whan user is authenticated
 class UserChangePasswordView(APIView):
     serializer_class = UserChangePasswordSerializer
     permission_classes = [IsAuthenticated]
@@ -107,16 +108,21 @@ class UserChangePasswordView(APIView):
 
 
 
+
+#Change password when user forget it
 class UserPasswordResetView(APIView):
     serializer_class = UserPasswordResetSerializer
 
     @swagger_auto_schema(
         operation_description="Changement de password",
         request_body=UserPasswordResetSerializer
-
     )
+
     def post(self, request, uid, token, format=None):
-        serializer=UserPasswordResetSerializer(data=request.data, context={'uid': uid, "token": token})
+        serializer = UserPasswordResetSerializer(data=request.data, context={'uid': uid, "token": token})
         if serializer.is_valid(raise_exception=True):
-            return Response({'msg':"Password Reset Sucessfully"},status=status.HTTP_200_OK)
-        return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+            return Response({'msg': "Password Reset Sucessfully"}, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+

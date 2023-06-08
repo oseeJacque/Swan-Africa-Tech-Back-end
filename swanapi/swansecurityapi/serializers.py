@@ -39,6 +39,7 @@ class UserLoginSerializer(serializers.ModelSerializer):
 
 
 
+#Serializer for user to chnage his password when he is authentificated
 class UserChangePasswordSerializer(serializers.Serializer):
     password = serializers.CharField(max_length=255, style={'input_type': "password"}, write_only=True)
     password2 = serializers.CharField(max_length=255, style={'input_type': "password"}, write_only=True)
@@ -57,9 +58,9 @@ class UserChangePasswordSerializer(serializers.Serializer):
         return attrs
 
 
+# Serializer for send Password resset mail when user forget it
 class SendPasswordResetEmailSerializer(serializers.Serializer):
     email = serializers.EmailField(max_length=255)
-
     class Meta:
         model = User
         fields = ['email']
@@ -71,12 +72,13 @@ class SendPasswordResetEmailSerializer(serializers.Serializer):
             user = User.objects.get(email=email)
             #Encode the uid
             uid = urlsafe_base64_encode(force_bytes(user.id))
+            print(uid)
             #reset token for the user
             token = PasswordResetTokenGenerator().make_token(user)
             print(f"tokenn", token)
 
             #let's send the mail to user
-            body = "Hello my frinds"
+            body = f"\n Uid: {uid} \n Token: {token}"
             data = {
                 'subject': "Reset Yout Password ",
                 "body": body,
