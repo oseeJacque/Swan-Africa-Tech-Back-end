@@ -1,35 +1,8 @@
 from django.utils import timezone
 
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin, Permission, Group
 from django.db import models
 
-"""
-class UserManager(BaseUserManager):
-    def create_user(self, email, password=None, **extra_fields):
-        if not email:
-            raise ValueError('L\'adresse e-mail est obligatoire')
-
-        email = self.normalize_email(email)
-        user = self.model(email=email, **extra_fields)
-        user.set_password(password)
-        user.save()
-        return user
-
-    def create_superuser(self, email, password=None, **extra_fields):
-        extra_fields.setdefault('is_staff', True)
-        extra_fields.setdefault('is_superuser', True)
-        return self.create_user(email, password, **extra_fields)
-
-class User(AbstractBaseUser):
-    email = models.EmailField(unique=True)
-
-    objects = UserManager()
-
-    USERNAME_FIELD = 'email'
-
-    def __str__(self):
-        return f"{self.email}"
-"""
 SEXE_CHOICES = (
 
     ("HOMME", "HOMME"),
@@ -40,7 +13,7 @@ SEXE_CHOICES = (
 )
 
 class MyUserManager(BaseUserManager):
-    def create_user(self, email, lastname, firstname, password=None, birth_date=timezone.now(), sexe='', adresse='', description='', profession='', telephone=''):
+    def create_user(self, email, lastname, firstname, password=None, birth_date=timezone.now(), sex='', adress='', description='', profession='', telephone=''):
         """
         Creates and saves a User with the given email, name and password.
         """
@@ -52,11 +25,11 @@ class MyUserManager(BaseUserManager):
             lastname=lastname,
             firstname=firstname,
             birth_date=birth_date,
-            adresse=adresse,
+            adress=adress,
             description=description,
             profession=profession,
             telephone=telephone,
-            sexe=sexe
+            sex=sex
 
         )
 
@@ -64,7 +37,7 @@ class MyUserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, email, lastname, firstname, password=None, birth_date=timezone.now(), sexe='', adresse='', description='', profession='', telephone=''):
+    def create_superuser(self, email, lastname, firstname, password=None, birth_date=timezone.now(), sex='', adress='', description='', profession='', telephone=''):
         """
         Creates and saves a superuser with the given email, name and password.
         """
@@ -74,8 +47,8 @@ class MyUserManager(BaseUserManager):
             lastname=lastname,
             firstname=firstname,
             birth_date=birth_date,
-            sexe=sexe,
-            adresse=adresse,
+            sex=sex,
+            adress=adress,
             description=description,
             profession=profession,
             telephone=telephone
@@ -86,7 +59,7 @@ class MyUserManager(BaseUserManager):
         return user
 
 
-class User(AbstractBaseUser):
+class Users(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(
         verbose_name='email address',
         max_length=255,
@@ -95,11 +68,11 @@ class User(AbstractBaseUser):
 
     lastname = models.CharField(max_length=200)
     firstname = models.CharField(max_length=200)
-    sexe = models.CharField(max_length=15, choices=SEXE_CHOICES,default="NON_DEFINI")
+    sex = models.CharField(max_length=15, choices=SEXE_CHOICES, default="NON_DEFINI")
     picture = models.ImageField(default="default.png")
     telephone = models.CharField(max_length=20, default="")
     birth_date = models.DateField(default=timezone.now)
-    adresse=models.CharField(max_length=200, default="")
+    adress= models.CharField(max_length=200, default="")
     description = models.CharField(max_length=200, default="Aucune description")
     profession = models.CharField(max_length=200, default="Aucune rofession")
     is_admin = models.BooleanField(default=False)
@@ -107,11 +80,27 @@ class User(AbstractBaseUser):
 
     date_created_at = models.DateTimeField(auto_now_add=True)
     date_updated_at = models.DateTimeField(auto_now=True)
+    groups = models.ManyToManyField(
+        Group,
+        verbose_name='groups',
+        blank=True,
+        help_text='The groups this user belongs to.',
+        related_name='swan_users'  # Ajoutez cette ligne pour spécifier un nom distinct
+    )
+
+    user_permissions = models.ManyToManyField(
+        Permission,
+        verbose_name='user permissions',
+        blank=True,
+        help_text='Specific permissions for this user.',
+        related_name='swan_users'  # Ajoutez cette ligne pour spécifier un nom distinct
+    )
 
     objects = MyUserManager()
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['lastname', 'firstname']
+
 
     def __str__(self):
         return f"{self.lastname} {self.firstname}"

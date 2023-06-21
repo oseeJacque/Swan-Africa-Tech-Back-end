@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 from datetime import timedelta
 from pathlib import Path
 
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -25,7 +26,8 @@ SECRET_KEY = 'django-insecure-+jv_^ru=*!0io*9ispnk&h06tuzeqv90dsg*!r(qru%!ol@fy_
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["dev-security.swanafricatech.com", "www.dev-security.swanafricatech.com"]
+ALLOWED_HOSTS = []
+#"dev-security.swanafricatech.com", "www.dev-security.swanafricatech.com"
 
 # Application definition
 
@@ -110,6 +112,44 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'swanapi.wsgi.application'
 
+# Configurations Swagger pour l'utilisation de JWT
+SWAGGER_SETTINGS = {
+    "SECURITY_DEFINITIONS": {
+        "Bearer": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        }
+    }
+}
+
+
+# ...
+
+# Ajoutez les configurations Swagger et d'autorisation JWT dans le dictionnaire de configuration
+REST_FRAMEWORK = {
+
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+
+    'DEFAULT_FILTER_BACKENDS': (
+        'django_filters.rest_framework.DjangoFilterBackend',
+    ),
+
+}
+
+SWAGGER_SETTINGS = {
+   'SECURITY_DEFINITIONS': {
+
+      'Bearer': {
+            'type': 'apiKey',
+            'name': 'Authorization',
+            'in': 'header'
+      }
+   }
+}
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
@@ -316,3 +356,6 @@ EMAIL_PORT = 587
 EMAIL_HOST_USER = "oseesoke@gmail.com"
 EMAIL_HOST_PASSWORD = "ggycvawdfzwkdvgg"
 EMAIL_USE_TLS = True
+
+
+AUTH_USER_MODEL ="swansecurityapi.Users"

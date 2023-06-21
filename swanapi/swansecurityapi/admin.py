@@ -1,10 +1,10 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 
-from .models import User
+from .models import Users
 
 # Register your models here.
-"""
+
 class UserModelAdmin(BaseUserAdmin):
 
     # The fields to be used in displaying the User model.
@@ -14,6 +14,7 @@ class UserModelAdmin(BaseUserAdmin):
     list_filter = ('is_admin', 'type')
     fieldsets = (
         (None, {'fields': ('email', 'password')}),
+        ("infos", {'fields': ('firstname', 'lastname')}),
 
     )
 
@@ -28,5 +29,5 @@ class UserModelAdmin(BaseUserAdmin):
     search_fields = ('email')
     ordering = ('id', 'email',)
     filter_horizontal = ()
-"""
-admin.site.register(User)
+
+admin.site.register(Users)
